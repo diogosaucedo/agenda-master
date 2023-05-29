@@ -6,11 +6,30 @@ from rest_framework.decorators import api_view
 
 
 # Create your views here.
-@api_view(http_method_names=["GET"])
+@api_view(http_method_names=["GET", "PATCH"])
 def schedule_detail(request, id):
-    schedule = get_object_or_404(Schedule, id=id)
-    serializer = ScheduleSerializer(schedule)
-    return JsonResponse(serializer.data)
+    if request.method == "GET":
+        schedule = get_object_or_404(Schedule, id=id)
+        serializer = ScheduleSerializer(schedule)
+        return JsonResponse(serializer.data)
+    if request.method == "PATCH":
+        schedule = get_object_or_404(Schedule, id=id)
+        serializer = ScheduleSerializer(data=request.data, partial=True)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            schedule.date_time = validated_data.get("date_time", schedule.date_time)
+            schedule.custumer_name = validated_data.get(
+                "custumer_name", schedule.custumer_name
+            )
+            schedule.custumer_email = validated_data.get(
+                "custumer_email", schedule.custumer_email
+            )
+            schedule.custumer_phone = validated_data.get(
+                "custumer_phone", schedule.custumer_phone
+            )
+            schedule.save()
+            return JsonResponse(validated_data, status=200)
+        return JsonResponse(serializer.errors, status=400)
 
 
 @api_view(http_method_names=["GET", "POST"])
