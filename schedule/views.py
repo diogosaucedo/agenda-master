@@ -2,37 +2,42 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from schedule.models import Schedule
 from schedule.serializers import ScheduleSerializer
 
 
 # Create your views here.
-@api_view(http_method_names=["GET", "PATCH", "DELETE"])
-def schedule_detail(request, id):
-    schedule = get_object_or_404(Schedule, id=id)
-    if request.method == "GET":
+
+
+class ScheduleDetail(APIView):
+    def get(self, request, id):
+        schedule = get_object_or_404(Schedule, id=id)
         serializer = ScheduleSerializer(schedule)
         return JsonResponse(serializer.data)
-    if request.method == "PATCH":
+
+    def patch(self, request, id):
+        schedule = get_object_or_404(Schedule, id=id)
         serializer = ScheduleSerializer(schedule, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
         return JsonResponse(serializer.errors, status=400)
-    if request.method == "DELETE":
+
+    def delete(self, request, id):
+        schedule = get_object_or_404(Schedule, id=id)
         schedule.delete()
         return Response(status=204)
 
 
-@api_view(http_method_names=["GET", "POST"])
-def schedule_list(request):
-    if request.method == "GET":
+class ScheduleList(APIView):
+    def get(self, resquest):
         query_set = Schedule.objects.all()
         serializer = ScheduleSerializer(query_set, many=True)
         return JsonResponse(serializer.data, safe=False)
 
-    if request.method == "POST":
+    def post(self, request):
         data = request.data
         serializer = ScheduleSerializer(data=data)
         if serializer.is_valid():
