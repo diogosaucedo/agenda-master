@@ -1,8 +1,10 @@
+from django.contrib.auth.models import User
+
 from rest_framework import generics
 from rest_framework import permissions
 
 from schedule.models import Schedule
-from schedule.serializers import ScheduleSerializer
+from schedule.serializers import ScheduleSerializer, ServiceProviderSerializer
 
 
 # Create your views here.
@@ -39,3 +41,9 @@ class ScheduleDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsServiceProvider]
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
+
+
+class ServiceProviderList(generics.ListAPIView):
+    serializer_class = ServiceProviderSerializer
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAdminUser]
