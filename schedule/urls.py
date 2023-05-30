@@ -1,4 +1,5 @@
 from django.urls import path
+
 from schedule.views import schedule_detail, schedule_list
 
 urlpatterns = [
