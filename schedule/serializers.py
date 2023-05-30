@@ -44,3 +44,16 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
     # research about it later
     # def validate(self, attrs)
+
+
+class ServiceProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "schedules",
+        ]
+
+    # Serializing the schedules, PKs to objects
+    schedules = ScheduleSerializer(many=True, read_only=True)
