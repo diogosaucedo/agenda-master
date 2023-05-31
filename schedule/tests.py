@@ -1,4 +1,3 @@
-import json
 from datetime import datetime, timezone
 
 from rest_framework.test import APITestCase
