@@ -1,10 +1,15 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
+from django.http import JsonResponse
 
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.decorators import api_view
 
 from schedule.models import Schedule
 from schedule.serializers import ScheduleSerializer, ServiceProviderSerializer
+from schedule.utils import get_available_schedules
 
 
 # Create your views here.
@@ -47,3 +52,15 @@ class ServiceProviderList(generics.ListAPIView):
     serializer_class = ServiceProviderSerializer
     queryset = User.objects.all()
     permission_classes = [permissions.IsAdminUser]
+
+
+@api_view(http_method_names=["GET"])
+def get_times(request):
+    data = request.query_params.get("data")
+    if not data:
+        data = datetime.now().date()
+    else:
+        data = datetime.fromisoformat(data).date()
+
+    available_schedules = sorted(list(get_available_schedules(data)))
+    return JsonResponse(available_schedules, safe=False)
