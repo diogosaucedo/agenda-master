@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from schedule.models import Schedule
+from schedule.utils import get_available_schedules
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
@@ -33,6 +34,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Date time must be greater than current date"
             )
+        if value not in get_available_schedules(value.date()):
+            raise serializers.ValidationError("This time is not available!")
         return value
 
     def validate_service_provider(self, value):
