@@ -132,3 +132,27 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # python manage.py test
 TESTING = False
+
+# DictConfig schema: https://docs.python.org/3/library/logging.config.html#configuration-dictionary-schema
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "console": {"format": "%(name)-12s %(levelname)-8s %(message)s"},
+        "file": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"},
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "console"},
+        "file": {
+            "class": "logging.FileHandler",
+            "formatter": "file",
+            "filename": "app.log",
+        },
+    },
+    "loggers": {
+        "": {
+            "level": os.environ.get("DJANGO_LOG_LEVEL", "WARN"),
+            "handlers": ["console", "file"],
+        }
+    },
+}
