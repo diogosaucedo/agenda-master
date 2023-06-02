@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from schedule.models import Schedule
 from schedule.serializers import ScheduleSerializer, ServiceProviderSerializer
@@ -63,4 +64,9 @@ def get_times(request):
         data = datetime.fromisoformat(data).date()
 
     available_schedules = sorted(list(get_available_schedules(data)))
-    return JsonResponse(available_schedules, safe=False)
+    return Response(available_schedules)
+
+
+@api_view(http_method_names=["GET"])
+def health_check(request):
+    return Response({"status": "OK", "message": "Working!"}, status=200)
